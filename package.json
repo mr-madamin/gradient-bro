@@ -1,0 +1,44 @@
+{
+  "name": "gradient-bro",
+  "version": "0.1.0",
+  "description": "A zero-runtime-dependency vanilla JavaScript color picker with linear gradient support.",
+  "type": "module",
+  "main": "./dist/gradient-bro.umd.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "style": "./dist/gradient-bro.css",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/gradient-bro.umd.js"
+    },
+    "./style.css": "./dist/gradient-bro.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc --emitDeclarationOnly && esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js && esbuild src/index.ts --bundle --format=iife --global-name=GradientBro --outfile=dist/gradient-bro.umd.js && node scripts/copy-css.mjs",
+    "test": "npm run build && node test/run.mjs",
+    "preview": "python3 -m http.server 4173 -d examples"
+  },
+  "keywords": [
+    "color-picker",
+    "gradient",
+    "vanilla-js",
+    "css-gradient",
+    "color"
+  ],
+  "author": "",
+  "license": "MIT",
+  "sideEffects": [
+    "./dist/gradient-bro.css"
+  ],
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.0"
+  }
+}
