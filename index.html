@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gradient Bro Example</title>
+    <link rel="stylesheet" href="./dist/gradient-bro.css">
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #eef2f8;
+        color: #172033;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        width: min(920px, calc(100vw - 32px));
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .preview {
+        min-height: 360px;
+        border: 1px solid #d9dee8;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #ff4d6d 0%, #4d96ff 100%);
+        box-shadow: 0 18px 45px rgba(17, 24, 39, 0.12);
+      }
+
+      code {
+        display: block;
+        margin-top: 12px;
+        padding: 12px;
+        overflow-wrap: anywhere;
+        background: #fff;
+        border: 1px solid #d9dee8;
+        border-radius: 8px;
+      }
+
+      @media (max-width: 760px) {
+        body {
+          place-items: start center;
+          padding: 16px 0;
+        }
+
+        main {
+          grid-template-columns: 1fr;
+        }
+
+        .preview {
+          min-height: 220px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div id="picker"></div>
+      <section>
+        <div class="preview" id="preview"></div>
+        <code id="value"></code>
+      </section>
+    </main>
+    <script type="module">
+      import { GradientBro } from "./dist/index.js";
+
+      const preview = document.querySelector("#preview");
+      const output = document.querySelector("#value");
+      const picker = new GradientBro("#picker", {
+        mode: "gradient",
+        value: "linear-gradient(90deg, #ff4d6d 0%, #4d96ff 100%)",
+        format: "hex",
+        onChange(value) {
+          preview.style.background = value;
+          output.textContent = value;
+        }
+      });
+
+      output.textContent = picker.getValue();
+    </script>
+  </body>
+</html>
