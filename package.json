@@ -30,7 +30,10 @@
     "gradient",
     "vanilla-js",
     "css-gradient",
-    "color"
+    "color",
+    "linear-gradient",
+    "color-stop",
+    "ui-component"
   ],
   "author": "",
   "license": "MIT",
