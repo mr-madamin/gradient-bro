@@ -225,7 +225,7 @@ export class GradientBro {
       this.emit("change");
       this.emit("commit");
     });
-    this.listen(this.elements.gradientRail, "dblclick", (event) => this.addStopAt(event as MouseEvent));
+    this.listen(this.elements.gradientRail, "click", (event) => this.addStopAt(event as MouseEvent));
     this.options.swatches.forEach((swatch) => {
       const button = document.createElement("button");
       button.type = "button";
@@ -326,8 +326,9 @@ export class GradientBro {
   }
 
   private addStopAt(event: MouseEvent): void {
-    const rect = this.elements.gradientRail.getBoundingClientRect();
-    const position = clamp(((event.clientX - rect.left) / rect.width) * 100, 0, 100);
+    const target = event.target;
+    if (target instanceof Element && target.closest(`.${this.options.classPrefix}-gradient-stop`)) return;
+    const position = this.getGradientPosition(event);
     this.mode = "gradient";
     this.gradient = normalizeGradient({ ...this.gradient, stops: [...this.gradient.stops, { color: this.color, position }] });
     this.selectedStop = this.findStopIndexByPosition(position);
@@ -369,8 +370,7 @@ export class GradientBro {
     event.preventDefault();
     this.selectStop(index);
     const move = (pointer: PointerEvent) => {
-      const rect = this.elements.gradientRail.getBoundingClientRect();
-      const position = clamp(((pointer.clientX - rect.left) / rect.width) * 100, 0, 100);
+      const position = this.getGradientPosition(pointer);
       const stops = [...this.gradient.stops];
       stops[this.selectedStop] = { ...stops[this.selectedStop], position };
       this.gradient = normalizeGradient({ ...this.gradient, stops });
@@ -385,6 +385,12 @@ export class GradientBro {
     };
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up, { once: true });
+  }
+
+  private getGradientPosition(event: MouseEvent | PointerEvent): number {
+    const rect = this.elements.stops.getBoundingClientRect();
+    if (rect.width <= 0) return 0;
+    return clamp(((event.clientX - rect.left) / rect.width) * 100, 0, 100);
   }
 
   private keySv(event: KeyboardEvent): void {
