@@ -57,6 +57,7 @@ type Elements = {
 };
 
 const DEFAULT_SWATCHES = ["#ff4d6d", "#ffb703", "#2ec4b6", "#4d96ff", "#7b2cbf", "#111827", "#ffffff"];
+const HUE_SLIDER_MAX = 359;
 
 export class GradientBro {
   private container: HTMLElement;
@@ -159,7 +160,7 @@ export class GradientBro {
         </div>
         <div class="${p}-preview" aria-label="Selected color preview"></div>
       </div>
-      <label class="${p}-control"><span>Hue</span><input class="${p}-hue" type="range" min="0" max="360" value="0" aria-label="Hue"></label>
+      <label class="${p}-control"><span>Hue</span><input class="${p}-hue" type="range" min="0" max="${HUE_SLIDER_MAX}" value="0" aria-label="Hue"></label>
       <label class="${p}-control"><span>Alpha</span><input class="${p}-alpha" type="range" min="0" max="100" value="100" aria-label="Alpha"></label>
       <div class="${p}-inputs">
         <label><span>HEX</span><input class="${p}-hex" aria-label="Hex color"></label>
