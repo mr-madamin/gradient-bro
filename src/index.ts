@@ -319,9 +319,10 @@ export class GradientBro {
     const position = 50;
     this.gradient = normalizeGradient({
       ...this.gradient,
-      stops: [...this.gradient.stops, { color: this.color, position }]
+      stops: [...this.gradient.stops, { color: this.getGradientColorAt(position), position }]
     });
     this.selectedStop = this.findStopIndexByPosition(position);
+    this.color = this.gradient.stops[this.selectedStop].color;
     this.sync();
     this.emit("change");
     this.emit("commit");
@@ -332,8 +333,9 @@ export class GradientBro {
     if (target instanceof Element && target.closest(`.${this.options.classPrefix}-gradient-stop`)) return;
     const position = this.getGradientPosition(event);
     this.mode = "gradient";
-    this.gradient = normalizeGradient({ ...this.gradient, stops: [...this.gradient.stops, { color: this.color, position }] });
+    this.gradient = normalizeGradient({ ...this.gradient, stops: [...this.gradient.stops, { color: this.getGradientColorAt(position), position }] });
     this.selectedStop = this.findStopIndexByPosition(position);
+    this.color = this.gradient.stops[this.selectedStop].color;
     this.sync();
     this.emit("change");
     this.emit("commit");
@@ -401,6 +403,24 @@ export class GradientBro {
     const rect = this.elements.stops.getBoundingClientRect();
     if (rect.width <= 0) return 0;
     return clamp(((event.clientX - rect.left) / rect.width) * 100, 0, 100);
+  }
+
+  private getGradientColorAt(position: number): RgbaColor {
+    const stops = normalizeGradient(this.gradient).stops;
+    const rightIndex = stops.findIndex((stop) => stop.position >= position);
+    if (rightIndex === -1) return { ...stops[stops.length - 1].color };
+    if (rightIndex === 0) return { ...stops[0].color };
+
+    const left = stops[rightIndex - 1];
+    const right = stops[rightIndex];
+    const span = right.position - left.position;
+    const amount = span === 0 ? 0 : (position - left.position) / span;
+    return {
+      r: Math.round(left.color.r + (right.color.r - left.color.r) * amount),
+      g: Math.round(left.color.g + (right.color.g - left.color.g) * amount),
+      b: Math.round(left.color.b + (right.color.b - left.color.b) * amount),
+      a: left.color.a + (right.color.a - left.color.a) * amount
+    };
   }
 
   private isOutsideGradientRail(event: PointerEvent): boolean {
