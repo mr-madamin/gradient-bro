@@ -378,9 +378,13 @@ export class GradientBro {
       this.sync();
       this.emit("change");
     };
-    const up = () => {
+    const up = (pointer: PointerEvent) => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+      if (this.gradient.stops.length > 2 && this.isOutsideGradientRail(pointer)) {
+        this.removeStop();
+        return;
+      }
       this.emit("commit");
     };
     window.addEventListener("pointermove", move);
@@ -391,6 +395,11 @@ export class GradientBro {
     const rect = this.elements.stops.getBoundingClientRect();
     if (rect.width <= 0) return 0;
     return clamp(((event.clientX - rect.left) / rect.width) * 100, 0, 100);
+  }
+
+  private isOutsideGradientRail(event: PointerEvent): boolean {
+    const rect = this.elements.gradientRail.getBoundingClientRect();
+    return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
   }
 
   private keySv(event: KeyboardEvent): void {
