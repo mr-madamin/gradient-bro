@@ -69,6 +69,7 @@ export class GradientBro {
   private mode: PickerMode;
   private elements: Elements;
   private cleanups: Array<() => void> = [];
+  private stopDeletePreview = false;
 
   constructor(container: HTMLElement | string, options: GradientBroOptions = {}) {
     const target = typeof container === "string" ? document.querySelector<HTMLElement>(container) : container;
@@ -280,6 +281,7 @@ export class GradientBro {
       button.setAttribute("aria-valuenow", String(Math.round(stop.position)));
       button.setAttribute("role", "slider");
       if (index === this.selectedStop) button.classList.add(`${this.options.classPrefix}-gradient-stop--active`);
+      if (index === this.selectedStop && this.stopDeletePreview) button.classList.add(`${this.options.classPrefix}-gradient-stop--delete`);
       button.addEventListener("pointerdown", (event) => this.dragStop(event, index));
       button.addEventListener("click", () => this.selectStop(index));
       button.addEventListener("keydown", (event) => this.keyStop(event, index));
@@ -370,6 +372,8 @@ export class GradientBro {
     event.preventDefault();
     this.selectStop(index);
     const move = (pointer: PointerEvent) => {
+      this.stopDeletePreview = this.gradient.stops.length > 2 && this.isOutsideGradientRail(pointer);
+      this.elements.root.classList.toggle(`${this.options.classPrefix}-picker--delete-stop`, this.stopDeletePreview);
       const position = this.getGradientPosition(pointer);
       const stops = [...this.gradient.stops];
       stops[this.selectedStop] = { ...stops[this.selectedStop], position };
@@ -381,6 +385,8 @@ export class GradientBro {
     const up = (pointer: PointerEvent) => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+      this.stopDeletePreview = false;
+      this.elements.root.classList.remove(`${this.options.classPrefix}-picker--delete-stop`);
       if (this.gradient.stops.length > 2 && this.isOutsideGradientRail(pointer)) {
         this.removeStop();
         return;

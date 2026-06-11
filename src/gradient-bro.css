@@ -197,6 +197,18 @@
   box-shadow: 0 0 0 2px var(--gb-accent);
 }
 
+.gb-picker--delete-stop,
+.gb-picker--delete-stop .gb-gradient-stop--active,
+.gb-gradient-stop--delete,
+.gb-gradient-stop--delete:active {
+  cursor: not-allowed;
+}
+
+.gb-gradient-stop--delete {
+  opacity: 0.72;
+  box-shadow: 0 0 0 2px #ef4444;
+}
+
 .gb-gradient-tools {
   align-items: end;
 }
