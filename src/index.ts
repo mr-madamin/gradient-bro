@@ -453,12 +453,28 @@ export class GradientBro {
     button.type = "button";
     button.className = `${this.options.classPrefix}-eyedropper`;
     button.textContent = "Eyedropper";
+    button.title = "Pick a color from the screen";
+    button.setAttribute("aria-label", "Pick a color from the screen");
     button.addEventListener("click", async () => {
       const EyeDropperCtor = (window as unknown as { EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> } }).EyeDropper;
-      const result = await new EyeDropperCtor().open();
-      this.setActiveColor(parseColor(result.sRGBHex));
-      this.emit("change");
-      this.emit("commit");
+      button.disabled = true;
+      button.textContent = "Picking...";
+      try {
+        const result = await new EyeDropperCtor().open();
+        this.setActiveColor(parseColor(result.sRGBHex));
+        this.emit("change");
+        this.emit("commit");
+      } catch (error) {
+        if ((error as DOMException).name !== "AbortError") {
+          button.textContent = "Unavailable";
+          window.setTimeout(() => {
+            button.textContent = "Eyedropper";
+          }, 1200);
+        }
+      } finally {
+        button.disabled = false;
+        if (button.textContent === "Picking...") button.textContent = "Eyedropper";
+      }
     });
     parent.append(button);
     return button;
