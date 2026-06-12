@@ -81,6 +81,7 @@ export class GradientBro {
   private color: RgbaColor;
   private gradient: LinearGradient;
   private selectedStop = 0;
+  private isStopSelected = true;
   private mode: PickerMode;
   private elements: Elements;
   private cleanups: Array<() => void> = [];
@@ -119,11 +120,13 @@ export class GradientBro {
       this.mode = "gradient";
       this.gradient = parseGradient(value);
       this.selectedStop = 0;
+      this.isStopSelected = true;
       this.color = this.gradient.stops[0].color;
     } else if (typeof value === "object" && "stops" in value) {
       this.mode = "gradient";
       this.gradient = normalizeGradient(value);
       this.selectedStop = 0;
+      this.isStopSelected = true;
       this.color = this.gradient.stops[0].color;
     } else {
       this.mode = "color";
@@ -236,6 +239,7 @@ export class GradientBro {
     this.elements.copyButtons.forEach((button) => {
       this.listen(button, "click", () => void this.copyValue(button));
     });
+    this.listen(document, "pointerdown", (event) => this.deselectStop(event as PointerEvent));
     this.listen(this.elements.addStop, "click", () => this.addStop());
     this.listen(this.elements.removeStop, "click", () => this.removeStop());
     this.listen(this.elements.angle, "change", () => {
@@ -299,8 +303,8 @@ export class GradientBro {
       button.setAttribute("aria-valuemax", "100");
       button.setAttribute("aria-valuenow", String(Math.round(stop.position)));
       button.setAttribute("role", "slider");
-      if (index === this.selectedStop) button.classList.add(`${this.options.classPrefix}-gradient-stop--active`);
-      if (index === this.selectedStop && this.stopDeletePreview) button.classList.add(`${this.options.classPrefix}-gradient-stop--delete`);
+      if (this.isStopSelected && index === this.selectedStop) button.classList.add(`${this.options.classPrefix}-gradient-stop--active`);
+      if (this.isStopSelected && index === this.selectedStop && this.stopDeletePreview) button.classList.add(`${this.options.classPrefix}-gradient-stop--delete`);
       button.addEventListener("pointerdown", (event) => this.dragStop(event, index));
       button.addEventListener("click", () => this.selectStop(index));
       button.addEventListener("keydown", (event) => this.keyStop(event, index));
@@ -316,7 +320,7 @@ export class GradientBro {
 
   private setActiveColor(color: RgbaColor): void {
     this.color = color;
-    if (this.mode === "gradient") {
+    if (this.mode === "gradient" && this.isStopSelected) {
       const stops = [...this.gradient.stops];
       const position = stops[this.selectedStop]?.position ?? 0;
       stops[this.selectedStop] = { ...stops[this.selectedStop], color };
@@ -329,6 +333,7 @@ export class GradientBro {
   private selectStop(index: number): void {
     this.mode = "gradient";
     this.selectedStop = clamp(index, 0, this.gradient.stops.length - 1);
+    this.isStopSelected = true;
     this.color = this.gradient.stops[this.selectedStop].color;
     this.sync();
   }
@@ -341,6 +346,7 @@ export class GradientBro {
       stops: [...this.gradient.stops, { color: this.getGradientColorAt(position), position }]
     });
     this.selectedStop = this.findStopIndexByPosition(position);
+    this.isStopSelected = true;
     this.color = this.gradient.stops[this.selectedStop].color;
     this.sync();
     this.emit("change");
@@ -354,6 +360,7 @@ export class GradientBro {
     this.mode = "gradient";
     this.gradient = normalizeGradient({ ...this.gradient, stops: [...this.gradient.stops, { color: this.getGradientColorAt(position), position }] });
     this.selectedStop = this.findStopIndexByPosition(position);
+    this.isStopSelected = true;
     this.color = this.gradient.stops[this.selectedStop].color;
     this.sync();
     this.emit("change");
@@ -361,14 +368,26 @@ export class GradientBro {
   }
 
   private removeStop(): void {
-    if (this.gradient.stops.length <= 2) return;
+    if (!this.isStopSelected || this.gradient.stops.length <= 2) return;
     const stops = this.gradient.stops.filter((_, index) => index !== this.selectedStop);
     this.gradient = normalizeGradient({ ...this.gradient, stops });
     this.selectedStop = clamp(this.selectedStop, 0, this.gradient.stops.length - 1);
+    this.isStopSelected = true;
     this.color = this.gradient.stops[this.selectedStop].color;
     this.sync();
     this.emit("change");
     this.emit("commit");
+  }
+
+  private deselectStop(event: PointerEvent): void {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest(`.${this.options.classPrefix}-gradient-stop`)) return;
+    if (!this.isStopSelected) return;
+    this.isStopSelected = false;
+    this.stopDeletePreview = false;
+    this.elements.root.classList.remove(`${this.options.classPrefix}-picker--delete-stop`);
+    this.sync();
   }
 
   private dragSv(event: PointerEvent): void {
@@ -391,6 +410,7 @@ export class GradientBro {
 
   private dragStop(event: PointerEvent, index: number): void {
     event.preventDefault();
+    event.stopPropagation();
     this.selectStop(index);
     const move = (pointer: PointerEvent) => {
       this.stopDeletePreview = this.gradient.stops.length > 2 && this.isOutsideGradientRail(pointer);
