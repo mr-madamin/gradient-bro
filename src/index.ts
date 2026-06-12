@@ -56,7 +56,21 @@ type Elements = {
   eyedropper?: HTMLButtonElement;
 };
 
-const DEFAULT_SWATCHES = ["#ff4d6d", "#ffb703", "#2ec4b6", "#4d96ff", "#7b2cbf", "#111827", "#ffffff"];
+const DEFAULT_SWATCHES = [
+  "#ef4444",
+  "#f97316",
+  "#ffb703",
+  "#84cc16",
+  "#22c55e",
+  "#2ec4b6",
+  "#06b6d4",
+  "#4d96ff",
+  "#6366f1",
+  "#7b2cbf",
+  "#ff4d6d",
+  "#111827",
+  "#f8fafc"
+];
 const HUE_SLIDER_MAX = 359;
 
 export class GradientBro {
