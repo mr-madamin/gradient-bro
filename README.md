@@ -2,6 +2,16 @@
 
 A zero-runtime-dependency vanilla JavaScript color picker with linear gradient support.
 
+## Features
+
+- Pick solid colors or edit CSS linear gradients.
+- Edit HEX, RGB, HSL, and CSS values directly.
+- Copy any output format with per-field copy buttons.
+- Use alpha, hue, saturation, and brightness controls.
+- Choose from built-in tone-ordered swatches or pass your own.
+- Add, drag, reorder, and remove gradient stops.
+- Use the browser EyeDropper API when supported.
+
 ## Install
 
 ```sh
@@ -26,6 +36,14 @@ npm install gradient-bro
 </script>
 ```
 
+## Gradient Editing
+
+In gradient mode, click an empty spot on the gradient rail to add a stop at that position. New stops are created with the interpolated color from the gradient at the click point.
+
+Drag a stop horizontally to move it. Drag a stop outside the rail and release to remove it. Click outside a stop to clear the active stop selection.
+
+The `Add stop` button inserts an interpolated stop at 50%. `Remove stop` removes the selected stop, while preserving the minimum two stops needed for a valid gradient.
+
 ## API
 
 ```ts
@@ -43,6 +61,12 @@ new GradientBro(container, {
 ```
 
 Exports include `GradientBro`, `parseColor`, `parseGradient`, `formatColor`, and `formatGradient`.
+
+## Controls
+
+- `HEX`, `RGB`, `HSL`, and `CSS` fields each include a copy icon.
+- The `CSS` field contains the full current value, including `linear-gradient(...)` in gradient mode.
+- The `Eyedropper` button appears only when the current browser supports `window.EyeDropper`.
 
 ## Styling
 
