@@ -111,11 +111,41 @@
   grid-column: 1 / -1;
 }
 
+.gb-inputs label {
+  position: relative;
+}
+
+.gb-copy {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+}
+
+.gb-copy svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.gb-copy:hover,
+.gb-copy--copied {
+  color: var(--gb-accent);
+}
+
 .gb-picker input:not([type="range"]) {
   width: 100%;
   min-width: 0;
   min-height: 34px;
-  padding: 7px 8px;
+  padding: 7px 30px 7px 8px;
   color: var(--gb-text);
   background: #fff;
   border: 1px solid var(--gb-border);
@@ -146,6 +176,23 @@
 
 .gb-picker button:hover {
   border-color: var(--gb-accent);
+}
+
+.gb-picker .gb-copy {
+  min-height: 20px;
+  padding: 0;
+  color: var(--gb-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font: inherit;
+}
+
+.gb-picker .gb-copy:hover,
+.gb-picker .gb-copy--copied {
+  color: var(--gb-accent);
+  background: transparent;
+  border-color: transparent;
 }
 
 .gb-swatch {

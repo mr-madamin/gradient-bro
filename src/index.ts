@@ -46,6 +46,7 @@ type Elements = {
   rgb: HTMLInputElement;
   hsl: HTMLInputElement;
   css: HTMLInputElement;
+  copyButtons: NodeListOf<HTMLButtonElement>;
   swatches: HTMLDivElement;
   gradientPanel: HTMLDivElement;
   gradientRail: HTMLDivElement;
@@ -178,10 +179,10 @@ export class GradientBro {
       <label class="${p}-control"><span>Hue</span><input class="${p}-hue" type="range" min="0" max="${HUE_SLIDER_MAX}" value="0" aria-label="Hue"></label>
       <label class="${p}-control"><span>Alpha</span><input class="${p}-alpha" type="range" min="0" max="100" value="100" aria-label="Alpha"></label>
       <div class="${p}-inputs">
-        <label><span>HEX</span><input class="${p}-hex" aria-label="Hex color"></label>
-        <label><span>RGB</span><input class="${p}-rgb" aria-label="RGB color"></label>
-        <label><span>HSL</span><input class="${p}-hsl" aria-label="HSL color"></label>
-        <label class="${p}-css-field"><span>CSS</span><input class="${p}-css" aria-label="CSS color or gradient"></label>
+        <label><span>HEX</span><button class="${p}-copy" type="button" data-copy="hex" aria-label="Copy HEX code">${copyIcon()}</button><input class="${p}-hex" aria-label="Hex color"></label>
+        <label><span>RGB</span><button class="${p}-copy" type="button" data-copy="rgb" aria-label="Copy RGB code">${copyIcon()}</button><input class="${p}-rgb" aria-label="RGB color"></label>
+        <label><span>HSL</span><button class="${p}-copy" type="button" data-copy="hsl" aria-label="Copy HSL code">${copyIcon()}</button><input class="${p}-hsl" aria-label="HSL color"></label>
+        <label class="${p}-css-field"><span>CSS</span><button class="${p}-copy" type="button" data-copy="css" aria-label="Copy CSS code">${copyIcon()}</button><input class="${p}-css" aria-label="CSS color or gradient"></label>
       </div>
       <div class="${p}-actions"></div>
       <div class="${p}-swatches" aria-label="Color swatches"></div>
@@ -209,6 +210,7 @@ export class GradientBro {
       rgb: root.querySelector<HTMLInputElement>(`.${p}-rgb`)!,
       hsl: root.querySelector<HTMLInputElement>(`.${p}-hsl`)!,
       css: root.querySelector<HTMLInputElement>(`.${p}-css`)!,
+      copyButtons: root.querySelectorAll<HTMLButtonElement>(`.${p}-copy`),
       swatches: root.querySelector<HTMLDivElement>(`.${p}-swatches`)!,
       gradientPanel: root.querySelector<HTMLDivElement>(`.${p}-gradient-panel`)!,
       gradientRail: root.querySelector<HTMLDivElement>(`.${p}-gradient-rail`)!,
@@ -231,6 +233,9 @@ export class GradientBro {
     this.listen(this.elements.rgb, "change", () => this.applyInput(this.elements.rgb.value));
     this.listen(this.elements.hsl, "change", () => this.applyInput(this.elements.hsl.value));
     this.listen(this.elements.css, "change", () => this.applyInput(this.elements.css.value));
+    this.elements.copyButtons.forEach((button) => {
+      this.listen(button, "click", () => void this.copyValue(button));
+    });
     this.listen(this.elements.addStop, "click", () => this.addStop());
     this.listen(this.elements.removeStop, "click", () => this.removeStop());
     this.listen(this.elements.angle, "change", () => {
@@ -481,6 +486,47 @@ export class GradientBro {
     }
   }
 
+  private async copyValue(button: HTMLButtonElement): Promise<void> {
+    const target = button.dataset.copy as "hex" | "rgb" | "hsl" | "css";
+    const value = this.elements[target].value;
+    try {
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch {
+          this.copyWithTextarea(value);
+        }
+      } else {
+        this.copyWithTextarea(value);
+      }
+      this.showCopyFeedback(button, true);
+    } catch {
+      this.showCopyFeedback(button, false);
+    }
+  }
+
+  private copyWithTextarea(value: string): void {
+    const textarea = document.createElement("textarea");
+    textarea.value = value;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.top = "-1000px";
+    document.body.append(textarea);
+    textarea.select();
+    const copied = document.execCommand("copy");
+    textarea.remove();
+    if (!copied) throw new Error("Copy command failed.");
+  }
+
+  private showCopyFeedback(button: HTMLButtonElement, copied: boolean): void {
+    button.innerHTML = copied ? checkIcon() : copyIcon();
+    button.classList.toggle(`${this.options.classPrefix}-copy--copied`, copied);
+    window.setTimeout(() => {
+      button.innerHTML = copyIcon();
+      button.classList.remove(`${this.options.classPrefix}-copy--copied`);
+    }, 1200);
+  }
+
   private createEyedropperButton(parent: HTMLElement): HTMLButtonElement | undefined {
     if (!("EyeDropper" in window)) return undefined;
     const button = document.createElement("button");
@@ -544,4 +590,21 @@ function el<T extends keyof HTMLElementTagNameMap>(tag: T, className: string): H
   const node = document.createElement(tag);
   node.className = className;
   return node;
+}
+
+function copyIcon(): string {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+      <path d="M5 15V6a1 1 0 0 1 1-1h9"></path>
+    </svg>
+  `;
+}
+
+function checkIcon(): string {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 6 9 17l-5-5"></path>
+    </svg>
+  `;
 }
