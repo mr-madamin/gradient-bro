@@ -241,6 +241,7 @@ export class GradientBro {
     });
     this.listen(document, "pointerdown", (event) => this.deselectStop(event as PointerEvent));
     this.listen(this.elements.addStop, "click", () => this.addStop());
+    this.listen(this.elements.removeStop, "pointerdown", (event) => event.stopPropagation());
     this.listen(this.elements.removeStop, "click", () => this.removeStop());
     this.listen(this.elements.angle, "change", () => {
       this.mode = "gradient";
@@ -383,6 +384,7 @@ export class GradientBro {
     const target = event.target;
     if (!(target instanceof Element)) return;
     if (target.closest(`.${this.options.classPrefix}-gradient-stop`)) return;
+    if (target.closest(`.${this.options.classPrefix}-picker`) && target.closest("button, input, [role='slider']")) return;
     if (!this.isStopSelected) return;
     this.isStopSelected = false;
     this.stopDeletePreview = false;
