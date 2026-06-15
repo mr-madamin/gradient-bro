@@ -68,6 +68,10 @@ Exports include `GradientBro`, `parseColor`, `parseGradient`, `formatColor`, and
 - The `CSS` field contains the full current value, including `linear-gradient(...)` in gradient mode.
 - The `Eyedropper` button appears only when the current browser supports `window.EyeDropper`.
 
+## Examples
+
+Run `npm run preview` and open `/examples/` to browse focused examples for basic colors, gradient editing, form integration, theming, and programmatic control.
+
 ## Styling
 
 Gradient Bro ships plain CSS and does not use Shadow DOM. Override stable classes such as `.gb-picker`, `.gb-sv`, `.gb-hue`, `.gb-alpha`, and `.gb-gradient-stop`, or theme with CSS variables:
