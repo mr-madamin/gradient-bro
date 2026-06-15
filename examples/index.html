@@ -3,76 +3,93 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gradient Bro Example</title>
-    <link rel="stylesheet" href="../dist/gradient-bro.css">
+    <title>Gradient Bro Examples</title>
     <style>
       body {
         margin: 0;
         min-height: 100vh;
-        display: grid;
-        place-items: center;
         background: #eef2f8;
         color: #172033;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
       main {
-        width: min(920px, calc(100vw - 32px));
+        width: min(880px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: 32px;
+        line-height: 1.1;
+      }
+
+      p {
+        margin: 0 0 28px;
+        color: #697386;
+      }
+
+      nav {
         display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 24px;
-        align-items: start;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
       }
 
-      .preview {
-        min-height: 360px;
-        border: 1px solid #d9dee8;
-        border-radius: 8px;
-        background: linear-gradient(90deg, #ff4d6d 0%, #4d96ff 100%);
-        box-shadow: 0 18px 45px rgba(17, 24, 39, 0.12);
-      }
-
-      code {
-        display: block;
-        margin-top: 12px;
-        padding: 12px;
-        overflow-wrap: anywhere;
+      a {
+        display: grid;
+        gap: 6px;
+        min-height: 90px;
+        padding: 16px;
+        color: inherit;
+        text-decoration: none;
         background: #fff;
         border: 1px solid #d9dee8;
         border-radius: 8px;
+        box-shadow: 0 14px 32px rgba(17, 24, 39, 0.08);
       }
 
-      @media (max-width: 760px) {
-        main {
-          grid-template-columns: 1fr;
-        }
+      a:hover {
+        border-color: #2563eb;
+      }
+
+      strong {
+        font-size: 16px;
+      }
+
+      span {
+        color: #697386;
+        font-size: 13px;
+        line-height: 1.4;
       }
     </style>
   </head>
   <body>
     <main>
-      <div id="picker"></div>
-      <section>
-        <div class="preview" id="preview"></div>
-        <code id="value"></code>
-      </section>
+      <h1>Gradient Bro Examples</h1>
+      <p>Small, focused demos for common picker workflows.</p>
+      <nav aria-label="Examples">
+        <a href="./basic-color.html">
+          <strong>Basic color</strong>
+          <span>Use a solid color picker to style a preview card.</span>
+        </a>
+        <a href="./gradient-editor.html">
+          <strong>Gradient editor</strong>
+          <span>Edit stops, angle, alpha, and copy the CSS gradient.</span>
+        </a>
+        <a href="./forms.html">
+          <strong>Form integration</strong>
+          <span>Write picker output into form fields for saving settings.</span>
+        </a>
+        <a href="./theming.html">
+          <strong>Theming</strong>
+          <span>Customize the picker with CSS variables and swatches.</span>
+        </a>
+        <a href="./programmatic.html">
+          <strong>Programmatic control</strong>
+          <span>Drive the picker with setValue and read output with getValue.</span>
+        </a>
+      </nav>
     </main>
-    <script type="module">
-      import { GradientBro } from "../dist/index.js";
-
-      const preview = document.querySelector("#preview");
-      const output = document.querySelector("#value");
-      const picker = new GradientBro("#picker", {
-        mode: "gradient",
-        value: "linear-gradient(90deg, #ff4d6d 0%, #4d96ff 100%)",
-        format: "hex",
-        onChange(value) {
-          preview.style.background = value;
-          output.textContent = value;
-        }
-      });
-
-      output.textContent = picker.getValue();
-    </script>
   </body>
 </html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gradient Bro Programmatic Control</title>
+    <link rel="stylesheet" href="../dist/gradient-bro.css">
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #eef2f8;
+        color: #172033;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        width: min(920px, calc(100vw - 32px));
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .panel {
+        display: grid;
+        gap: 12px;
+      }
+
+      .preview {
+        min-height: 280px;
+        border-radius: 8px;
+        background: #ff4d6d;
+        box-shadow: 0 18px 45px rgba(17, 24, 39, 0.12);
+      }
+
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      button {
+        min-height: 34px;
+        padding: 0 12px;
+        color: #172033;
+        background: #fff;
+        border: 1px solid #d9dee8;
+        border-radius: 6px;
+        font: inherit;
+        font-weight: 650;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: #2563eb;
+      }
+
+      code {
+        display: block;
+        padding: 12px;
+        overflow-wrap: anywhere;
+        background: #fff;
+        border: 1px solid #d9dee8;
+        border-radius: 8px;
+      }
+
+      @media (max-width: 760px) {
+        body { place-items: start center; padding: 16px 0; }
+        main { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div id="picker"></div>
+      <section class="panel">
+        <div class="preview" id="preview"></div>
+        <div class="buttons">
+          <button type="button" data-value="#ff4d6d">Set pink</button>
+          <button type="button" data-value="#2ec4b6">Set teal</button>
+          <button type="button" data-value="linear-gradient(90deg, #ff4d6d 0%, #4d96ff 100%)">Set gradient</button>
+        </div>
+        <code id="value"></code>
+      </section>
+    </main>
+    <script type="module">
+      import { GradientBro } from "../dist/index.js";
+
+      const preview = document.querySelector("#preview");
+      const output = document.querySelector("#value");
+      const picker = new GradientBro("#picker", {
+        mode: "color",
+        value: "#ff4d6d",
+        onChange: sync
+      });
+
+      function sync(value = picker.getValue()) {
+        preview.style.background = value;
+        output.textContent = value;
+      }
+
+      document.querySelectorAll("[data-value]").forEach((button) => {
+        button.addEventListener("click", () => {
+          picker.setValue(button.dataset.value);
+          sync();
+        });
+      });
+
+      sync();
+    </script>
+  </body>
+</html>
