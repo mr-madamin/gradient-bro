@@ -35,8 +35,16 @@
     "color-stop",
     "ui-component"
   ],
-  "author": "",
+  "author": "Daler Madaminov",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mr-madamin/gradient-bro.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mr-madamin/gradient-bro/issues"
+  },
+  "homepage": "https://github.com/mr-madamin/gradient-bro#readme",
   "sideEffects": [
     "./dist/gradient-bro.css"
   ],
