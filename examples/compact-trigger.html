@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gradient Bro Compact Trigger</title>
+    <link rel="stylesheet" href="../dist/gradient-bro.css">
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #eef2f8;
+        color: #172033;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        width: min(520px, calc(100vw - 32px));
+        display: grid;
+        gap: 12px;
+      }
+
+      label {
+        display: grid;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 650;
+      }
+
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 64px;
+        gap: 12px;
+        align-items: center;
+      }
+
+      input {
+        width: 100%;
+        min-width: 0;
+        min-height: 58px;
+        box-sizing: border-box;
+        padding: 0 18px;
+        color: #111827;
+        background: #fff;
+        border: 1px solid #d9dee8;
+        border-radius: 6px;
+        font: inherit;
+        font-size: 24px;
+      }
+
+      .swatch-button {
+        width: 64px;
+        height: 58px;
+        padding: 9px;
+        background: #fff;
+        border: 1px solid #d9dee8;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .swatch {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: #eb5e41;
+        border-radius: 4px;
+        box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.12);
+      }
+
+      .popover {
+        width: max-content;
+      }
+
+      .popover[hidden] {
+        display: none;
+      }
+
+      .preview {
+        min-height: 160px;
+        border-radius: 8px;
+        background: #eb5e41;
+        box-shadow: 0 18px 45px rgba(17, 24, 39, 0.12);
+      }
+
+      @media (max-width: 460px) {
+        .field-row {
+          grid-template-columns: 1fr 58px;
+        }
+
+        input {
+          min-height: 54px;
+          font-size: 20px;
+        }
+
+        .swatch-button {
+          width: 58px;
+          height: 54px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <label>
+        Color
+        <span class="field-row">
+          <input id="color-input" value="#EB5E41" aria-label="Color value">
+          <button class="swatch-button" id="swatch-button" type="button" aria-label="Open color picker">
+            <span class="swatch" id="swatch"></span>
+          </button>
+        </span>
+      </label>
+      <div class="popover" id="popover" hidden>
+        <div id="picker"></div>
+      </div>
+      <div class="preview" id="preview"></div>
+    </main>
+    <script type="module">
+      import { GradientBro } from "../dist/index.js";
+
+      const input = document.querySelector("#color-input");
+      const swatch = document.querySelector("#swatch");
+      const swatchButton = document.querySelector("#swatch-button");
+      const popover = document.querySelector("#popover");
+      const preview = document.querySelector("#preview");
+
+      const picker = new GradientBro("#picker", {
+        mode: "color",
+        value: input.value,
+        format: "hex",
+        onChange(value) {
+          sync(value);
+        }
+      });
+
+      function sync(value) {
+        input.value = value.toUpperCase();
+        swatch.style.background = value;
+        preview.style.background = value;
+      }
+
+      swatchButton.addEventListener("click", () => {
+        popover.hidden = !popover.hidden;
+      });
+
+      input.addEventListener("change", () => {
+        try {
+          picker.setValue(input.value);
+          sync(picker.getValue());
+        } catch {
+          input.value = picker.getValue().toUpperCase();
+        }
+      });
+
+      document.addEventListener("pointerdown", (event) => {
+        if (popover.hidden) return;
+        if (popover.contains(event.target) || swatchButton.contains(event.target) || input.contains(event.target)) return;
+        popover.hidden = true;
+      });
+
+      sync(picker.getValue());
+    </script>
+  </body>
+</html>

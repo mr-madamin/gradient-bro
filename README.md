@@ -70,7 +70,7 @@ Exports include `GradientBro`, `parseColor`, `parseGradient`, `formatColor`, and
 
 ## Examples
 
-Run `npm run preview` and open `/examples/` to browse focused examples for basic colors, gradient editing, form integration, theming, and programmatic control.
+Run `npm run preview` and open `/examples/` to browse focused examples for basic colors, gradient editing, form integration, theming, programmatic control, and compact trigger UIs.
 
 ## Styling
 
