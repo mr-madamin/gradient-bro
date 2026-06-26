@@ -23,6 +23,7 @@
   "scripts": {
     "build": "tsc --emitDeclarationOnly && esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js && esbuild src/index.ts --bundle --format=iife --global-name=GradientBro --outfile=dist/gradient-bro.umd.js && node scripts/copy-css.mjs",
     "test": "npm run build && node test/run.mjs",
+    "prepublishOnly": "npm test",
     "preview": "python3 -m http.server 4173"
   },
   "keywords": [
